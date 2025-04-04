@@ -27,19 +27,22 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				margin: 0 auto;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
+				max-height: 500px;
+				object-fit: cover;
 			}
 			.prose {
-				width: 720px;
+				width: 960px;
 				max-width: calc(100% - 2em);
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
+				line-height: 1.7;
 			}
 			.title {
 				margin-bottom: 1em;
 				padding: 1em 0;
 				text-align: center;
-				line-height: 1;
+				line-height: 1.3;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
@@ -51,6 +54,69 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			
+			/* Recipe-specific styles */
+			.recipe {
+				margin: 2rem 0;
+			}
+			.recipe-header {
+				margin-bottom: 1.5rem;
+			}
+			.recipe-meta {
+				display: flex;
+				gap: 1rem;
+				justify-content: center;
+				margin-top: 0.5rem;
+				font-style: italic;
+				color: rgb(var(--gray));
+			}
+			.recipe-details {
+				display: grid;
+				grid-template-columns: 1fr 2fr;
+				gap: 2rem;
+				margin-top: 2rem;
+			}
+			.ingredients {
+				padding: 0;
+				list-style: none;
+			}
+			.ingredients li {
+				display: flex;
+				gap: 0.75rem;
+				padding: 0.5rem 0;
+				border-bottom: 1px dashed rgba(var(--gray), 0.2);
+			}
+			.measure {
+				font-weight: bold;
+				color: rgb(var(--accent));
+				min-width: 80px;
+			}
+			.step {
+				margin-bottom: 1.5rem;
+				position: relative;
+				padding-left: 1.75rem;
+			}
+			.step-number {
+				position: absolute;
+				left: 0;
+				font-weight: bold;
+				color: rgb(var(--accent));
+			}
+			.cuisine, .category {
+				padding: 0.25rem 0.5rem;
+				background: rgba(var(--accent), 0.1);
+				border-radius: 4px;
+			}
+			
+			@media (max-width: 768px) {
+				.recipe-details {
+					grid-template-columns: 1fr;
+				}
+				.prose {
+					width: 100%;
+					padding: 0.5em;
+				}
+			}
 		</style>
 	</head>
 
@@ -59,7 +125,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<main>
 			<article>
 				<div class="hero-image">
-					{heroImage && <img width={1020} height={510} src={heroImage} alt="" />}
+					{heroImage && <img width={1020} height={510} src={heroImage} alt={title} />}
 				</div>
 				<div class="prose">
 					<div class="title">

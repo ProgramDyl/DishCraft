@@ -1,0 +1,34 @@
+---
+// src/components/Recipe.astro
+const { recipe } = Astro.props;
+---
+
+<div class="recipe">
+  <h2>{recipe.strMeal}</h2>
+  <img src={recipe.strMealThumb} alt={recipe.strMeal} width="600" />
+  
+  <h3>Ingredients</h3>
+  <ul>
+    {Array.from({ length: 20 }, (_, i) => {
+      const ingredient = recipe[`strIngredient${i+1}`];
+      const measure = recipe[`strMeasure${i+1}`];
+      return ingredient && <li>{measure} {ingredient}</li>;
+    }).filter(Boolean)}
+  </ul>
+  
+  <h3>Instructions</h3>
+  <p>{recipe.strInstructions}</p>
+</div>
+
+<style>
+  .recipe {
+    margin: 2rem 0;
+  }
+  .recipe img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  .recipe ul {
+    padding-left: 1rem;
+  }
+</style>
