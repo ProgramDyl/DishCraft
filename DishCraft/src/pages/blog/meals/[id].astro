@@ -1,14 +1,11 @@
 ---
-// src/pages/blog/meals/[id].astro
 
-// Import a layout component (adjust path as needed)
 import BlogPost from '../../../layouts/BlogPost.astro'; // Assuming layout is 3 levels up
 
-// Get the meal ID from the URL parameter
+
 const { id: mealId } = Astro.params;
 
-// Define the structure for a single meal from the lookup API
-// Note: The lookup API returns meals in an array, even if it's just one
+
 interface MealDetail {
   idMeal: string;
   strMeal: string;
@@ -19,15 +16,12 @@ interface MealDetail {
   strMealThumb: string;
   strTags?: string | null;
   strYoutube?: string | null;
-  // Ingredients and Measures (example for a few)
   strIngredient1?: string | null;
   strIngredient2?: string | null;
   strIngredient3?: string | null;
-  // ... up to strIngredient20
   strMeasure1?: string | null;
   strMeasure2?: string | null;
   strMeasure3?: string | null;
-  // ... up to strMeasure20
   strSource?: string | null;
   strImageSource?: string | null;
   strCreativeCommonsConfirmed?: string | null;
@@ -39,14 +33,12 @@ let error: string | null = null;
 let pageTitle = "Meal Recipe"; // Default title
 let description = "Recipe details for a delicious meal."; // Default description
 
-// Make sure prerendering is off if needed (usually default in 'server' mode)
 export const prerender = false;
 
 if (!mealId) {
   error = "Meal ID is missing.";
 } else {
   try {
-    // Fetch the specific meal details using the ID
     const apiUrl = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`;
     console.log(`[${new Date().toISOString()}] Fetching meal detail from: ${apiUrl}`);
     const response = await fetch(apiUrl);
@@ -57,7 +49,6 @@ if (!mealId) {
 
     const data = await response.json();
 
-    // The API returns { meals: [mealDetail] } or { meals: null }
     if (data.meals && data.meals.length > 0) {
       meal = data.meals[0];
       pageTitle = meal.strMeal; // Set title to meal name
@@ -72,7 +63,6 @@ if (!mealId) {
   }
 }
 
-// Helper function to create an ingredients list
 function getIngredients(mealData: MealDetail): { ingredient: string; measure: string }[] {
   const ingredients = [];
   for (let i = 1; i <= 20; i++) {

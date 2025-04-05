@@ -1,7 +1,6 @@
 ---
 import BlogPost from '../../layouts/BlogPost.astro';
 
-// Get the letter param from URL query, default to 'a'
 const letterParam = Astro.url.searchParams.get('letter') || 'a';
 const validLetter = /^[a-zA-Z]$/.test(letterParam) ? letterParam.toLowerCase() : 'a';
 
