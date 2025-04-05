@@ -1,0 +1,258 @@
+---
+import BlogPost from '../../layouts/BlogPost.astro';
+
+// Get the letter param from URL query, default to 'a'
+const letterParam = Astro.url.searchParams.get('letter') || 'a';
+const validLetter = /^[a-zA-Z]$/.test(letterParam) ? letterParam.toLowerCase() : 'a';
+
+interface Meal {
+  idMeal: string;
+  strMeal: string;
+  strCategory: string;
+  strArea: string;
+  strInstructions: string;
+  strMealThumb: string;
+  strTags?: string;
+  strYoutube?: string;
+  dateModified?: string | null;
+}
+
+// Fetch meals based on the selected letter
+const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${validLetter}`);
+const data = await response.json();
+const meals = data.meals || [];
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const pageTitle = `Meals Starting With '${validLetter.toUpperCase()}'`;
+const description = `Discover delicious recipes and meals starting with the letter ${validLetter.toUpperCase()}`;
+---
+
+<BlogPost 
+  title={pageTitle} 
+  description={description} 
+  hideDateDisplay={true}
+>
+  <div class="letter-selection">
+    <p>Select a letter to browse meals:</p>
+    <div class="alphabet">
+      {alphabet.map((char) => (
+        <button 
+          class={`letter-link ${char === validLetter ? 'active' : ''}`}
+          data-letter={char}
+          aria-current={char === validLetter ? 'page' : undefined}
+        >
+          {char.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div id="current-letter" style="text-align: center; font-weight: bold; margin-bottom: 1rem;">
+    Currently showing: Letter '{validLetter.toUpperCase()}'
+  </div>
+
+  <p class="subtitle">
+    Browse our collection of delicious meals and recipes starting with 
+    the letter '{validLetter.toUpperCase()}'. Click on any meal to view the full recipe details.
+  </p>
+  
+  {meals.length === 0 ? (
+    <div class="empty-state">
+      <p>No meals found starting with '{validLetter.toUpperCase()}'.</p>
+      <p>Try a different letter from the selection above.</p>
+      <a href="/blog" class="back-link">← Back to Blog</a>
+    </div>
+  ) : (
+    <div class="meals-grid">
+      {meals.map((meal: Meal) => (
+        <article class="meal-card">
+          <div class="meal-image">
+            <img src={meal.strMealThumb} alt={meal.strMeal} />
+          </div>
+          <div class="meal-content">
+            <h2>{meal.strMeal}</h2>
+            <div class="meal-meta">
+              <span class="category">{meal.strCategory}</span>
+              <span class="area">{meal.strArea}</span>
+            </div>
+            <p class="meal-description">
+              {meal.strInstructions?.substring(0, 150)}...
+            </p>
+            <a href={`/blog/meals/${meal.idMeal}`} class="view-recipe">View Recipe</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+</BlogPost>
+
+<script>
+  // Change letters from links to buttons with click handlers to force page reload
+  document.querySelectorAll('.letter-link').forEach(button => {
+    button.addEventListener('click', (e) => {
+      // Get the letter from the data attribute
+      const letter = e.currentTarget.getAttribute('data-letter');
+      
+      // Force a full page reload with the new letter parameter
+      window.location.href = `/blog/meal-list?letter=${letter}`;
+      
+      // Use this for debugging
+      console.log(`Letter ${letter} clicked. Navigating to: /blog/meal-list?letter=${letter}`);
+    });
+  });
+</script>
+
+<style>
+  .letter-selection {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .alphabet {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .letter-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .letter-link:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+  }
+
+  .letter-link.active {
+    background: #4a6cf7;
+    color: white;
+  }
+
+  .subtitle {
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .meals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+
+  .meal-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+  }
+
+  .meal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .meal-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .meal-content {
+    padding: 1.5rem;
+  }
+
+  .meal-content h2 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .meal-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .category, .area {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: #f0f0f0;
+    color: #555;
+  }
+
+  .meal-description {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  .view-recipe {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #4a6cf7;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s ease;
+  }
+
+  .view-recipe:hover {
+    background: #3558e6;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #f8f8f8;
+    border-radius: 8px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #4a6cf7;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .alphabet {
+      gap: 0.25rem;
+    }
+
+    .letter-link {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 0.875rem;
+    }
+
+    .meals-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
