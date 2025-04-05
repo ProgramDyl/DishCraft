@@ -93,7 +93,8 @@ const ingredientsList = meal ? getIngredients(meal) : [];
 
 ---
 
-<BlogPost title={pageTitle} description={description} pubDate={meal?.dateModified ? new Date(meal.dateModified) : undefined}>
+{/* Removed pubDate prop, added hideDateDisplay={true} */}
+<BlogPost title={pageTitle} description={description} hideDateDisplay={true}>
 
   {error && (
     <div class="error-state">
