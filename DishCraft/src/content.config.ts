@@ -8,7 +8,9 @@ const blog = defineCollection({
     pubDate: z.coerce.date(), 
     updatedDate: z.coerce.date().optional(),
     heroImage: z.string().optional(),
-    mealId: z.string().optional()
+    mealId: z.string().optional(),
+    recipeImage: z.string().optional(),  // Image fetched from MealDB
+    recipeName: z.string().optional() 
   })
 });
 

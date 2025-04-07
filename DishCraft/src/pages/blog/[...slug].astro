@@ -4,6 +4,8 @@ import { getCollection } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { render } from 'astro:content';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map(post => ({
@@ -30,7 +32,7 @@ const { Content } = await render(post);
 <BlogPost {...post.data}>
   {recipe && (
     <div class="recipe">
-      <h2>{recipe.strMeal}</h2>
+      
       <img 
         src={recipe.strMealThumb} 
         alt={recipe.strMeal} 
